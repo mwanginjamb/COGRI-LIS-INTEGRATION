@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\ConsultationLab;
+use app\models\MasterAccountdetails;
 
 class SiteController extends Controller
 {
@@ -150,6 +151,10 @@ class SiteController extends Controller
 
         $transformedCustomers = json_decode($customers);
 
+        /* print '<pre>';
+        print_r($transformedCustomers);
+        exit;*/
+
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
         $i = 0;
@@ -184,11 +189,11 @@ class SiteController extends Controller
 
                 if(!is_string($result))
                 {                    
-                   $this->flag($customer['auto_number']);
-                }/*else
+                   // $this->flag($customer['auto_number']);
+                }else
                 {
                     print '<br/> Error....'.$result;
-                }*/
+                }
             
            
            sleep(1); // Add some latency 
@@ -275,10 +280,10 @@ class SiteController extends Controller
         $Imported = $this->actionImported();
         $list = json_decode($Imported, true);
 
-        $customers = ConsultationLab::find()
+        $customers = MasterAccountdetails::find()
         ->where(['NOT',['accountcode' => '']])
         ->andWhere(['NOT IN','accountcode', $list])
-        ->andWhere(['flag' => 0])
+        // ->andWhere(['flag' => 0]) --Pending Update Permissions 
         ->limit($threshold)
        // ->orderBy('auto_number ASC')
         ->asArray()
@@ -302,8 +307,8 @@ class SiteController extends Controller
 
         $customers = ConsultationLab::find()
         ->where(['NOT',['accountcode' => '']])
-        //->andWhere(['NOT IN','accountcode', $list])
-        ->andWhere(['flag' => 1])
+        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        //->andWhere(['flag' => 1])
         ->andWhere(['Invoiced' => 0])
         ->limit($threshold)
        // ->orderBy('auto_number ASC')
@@ -362,6 +367,21 @@ class SiteController extends Controller
     }
 
 
+/*De Invoice*/
+
+     public function actionDeinvoice()
+    {
+       $connection = Yii::$app->db;
+
+       $result = $connection->createCommand()
+        ->update('consultation_lab',['Invoiced' => 0], 'Invoiced > 0')
+        ->execute();
+
+
+        var_dump($result);
+    }
+
+
 
 /*Flag posted entries*/
     public function flag($auto_number)
@@ -371,7 +391,7 @@ class SiteController extends Controller
        $connection = Yii::$app->db;
 
        $result = $connection->createCommand()
-        ->update('consultation_lab',['flag' => 1], 'auto_number = '.$auto_number)
+        ->update('master_accountdetails',['flag' => 1], 'auto_number = '.$auto_number)
         ->execute();
 
 
@@ -383,7 +403,7 @@ class SiteController extends Controller
     public function actionFlagged()
     {
 
-        $model = ConsultationLab::find()
+        $model = MasterAccountdetails::find()
         ->where(['flag' => 1])
         ->count();
 
@@ -436,10 +456,14 @@ class SiteController extends Controller
 
          $nos = [];
 
-         foreach($result as $r)
-         {
-            $nos[] = $r->No; 
-         }
+        if(is_array($result))
+        {
+            foreach($result as $r)
+                 {
+                    $nos[] = $r->No; 
+                 }
+        }
+         
 
          $Nos = array_values($nos);
 
@@ -448,6 +472,7 @@ class SiteController extends Controller
 
     public function actionGenerateInvoice()
     {
+         // return 1;
             /*@challenge what do we do with records without patientcode or accountcode --> walkins? */
         $service = Yii::$app->params['ServiceName']['CreateInvoicePortal'];
 
@@ -458,6 +483,8 @@ class SiteController extends Controller
         // convert json to php object
 
         $transformedCustomers = json_decode($customers);
+
+        //  print '<pre>'; print_r($transformedCustomers); exit;
 
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
@@ -477,7 +504,8 @@ class SiteController extends Controller
                                 'Gen_Bus_Posting_Group'     => 'LOCAL',
                                 'auto_number'               => $tcus->auto_number,
                                 'testcode' => $tcus->testcode,
-                                'testrate' => $tcus->testrate
+                                'testrate' => $tcus->testrate,
+                                'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
                             ];    
                 
         }
@@ -498,14 +526,15 @@ class SiteController extends Controller
             $CuArgs = [
                 'custNoa46' => $customer['No'],
                 'programH' => 'NDL',
-                'departmentH' => 'LAB-002'
+                'departmentH' => 'LAB-001',
+                'pdate' => $customer['billdatetime'],
             ];
 
             // Create Invoice Header IanCreateInvoiceH
 
             $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
 
-            print "<br />".var_dump($result);
+            print "<br /> Header....".var_dump($result);
 
             if(!empty($result['return_value']) && is_string($result['return_value']))
             {
@@ -518,11 +547,11 @@ class SiteController extends Controller
 
                          $LineArgs = [
                             'invNo' => $result['return_value'],
-                            'categoryL' => 'TEST', //$customer['testcode'],
+                            'categoryL' => $customer['testcode'],
                             'quantityL' => 1,
                             'unitpriceL' => $customer['testrate'],
                             'programH' => 'NDL',
-                            'departmentH' => 'LAB-002'
+                            'departmentH' => 'LAB-001'
 
                         ];
 
@@ -531,7 +560,7 @@ class SiteController extends Controller
                        $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
 
                        
-
+                        print "<br /> Line .....".var_dump($lineResult);
 
 
 
@@ -545,7 +574,7 @@ class SiteController extends Controller
                      $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
 
 
-                     print "<br />".var_dump($postingResult);
+                     print "<br /> Posting .....".var_dump($postingResult);
 
             }
             

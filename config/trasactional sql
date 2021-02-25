@@ -1,0 +1,7 @@
+SELECT SUM( `testrate` ) AS total
+FROM `consultation_lab`
+WHERE (
+`billdatetime`
+BETWEEN '2021-02-24 00:00:00'
+AND '2021-02-24 23:59:59'
+AND `accountcode` = 'ACC00000067'
