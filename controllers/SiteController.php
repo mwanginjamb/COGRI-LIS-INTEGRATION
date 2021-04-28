@@ -308,10 +308,10 @@ class SiteController extends Controller
         $customers = ConsultationLab::find()
         ->where(['NOT',['accountcode' => '']])
         ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
-        //->andWhere(['flag' => 1])
+        ->andWhere(['>','testrate', 0])
         ->andWhere(['Invoiced' => 0])
         ->limit($threshold)
-       // ->orderBy('auto_number ASC')
+        ->orderBy('auto_number ASC')
         ->asArray()
         ->all();
 
@@ -474,7 +474,7 @@ class SiteController extends Controller
     {
          // return 1;
             /*@challenge what do we do with records without patientcode or accountcode --> walkins? */
-        $service = Yii::$app->params['ServiceName']['CreateInvoicePortal'];
+        $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
 
         //Get LIS customers
 
@@ -490,7 +490,8 @@ class SiteController extends Controller
         $navArgs = [];
         $i = 0;
 
-       
+    //print '<pre>';
+      // print_r($transformedCustomers); exit;
         foreach($transformedCustomers as $tcus)
         {
           
@@ -506,6 +507,8 @@ class SiteController extends Controller
                                 'testcode' => $tcus->testcode,
                                 'testrate' => $tcus->testrate,
                                 'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
+                                'postingD' => $tcus->patientname,
+                                'discountamount' => $tcus->discountamount,
                             ];    
                 
         }
@@ -517,17 +520,14 @@ class SiteController extends Controller
         foreach($navArgs as $customer)
         {
 
-             /*print '<pre>';
-        print_r($customer['No']);
-        exit;*/
-
-
+            
             // Header Arguments
             $CuArgs = [
                 'custNoa46' => $customer['No'],
                 'programH' => 'NDL',
                 'departmentH' => 'LAB-001',
                 'pdate' => $customer['billdatetime'],
+                'postingD' => $customer['postingD']
             ];
 
             // Create Invoice Header IanCreateInvoiceH
@@ -551,11 +551,12 @@ class SiteController extends Controller
                             'quantityL' => 1,
                             'unitpriceL' => $customer['testrate'],
                             'programH' => 'NDL',
-                            'departmentH' => 'LAB-001'
+                            'departmentH' => 'LAB-001',
+                            'discountA' => $customer['discountamount'],
 
                         ];
 
-                        // Invoke code Unit Function
+                        // Invoke code Unit Line Creation Function
 
                        $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
 
