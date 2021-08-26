@@ -301,7 +301,7 @@ class SiteController extends Controller
 
 
 
-    public function actionInvoiceableCustomers($threshold = 50)
+    public function actionInvoiceableCustomers($threshold = 10)
     {
 
 
@@ -315,11 +315,212 @@ class SiteController extends Controller
         ->asArray()
         ->all();
 
+
     
         return json_encode($customers);
 
     }
 
+
+
+
+
+    /*Get unposted Refunds - Processed for Posting*/
+
+    public function actionUnpostedmemos($threshold = 30)
+    {
+
+
+        $customers = ConsultationLab::find()
+        ->where(['NOT',['accountcode' => '']])
+        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        ->andWhere(['>','testrate', 0])
+        ->andWhere(['Invoiced' => 1])
+        ->andWhere(['>','totalamount', 0])
+        ->andWhere(['refund_flag' => '0'])
+        ->limit($threshold)
+        ->orderBy('auto_number ASC')
+        ->asArray()
+        ->all();
+
+    
+        return json_encode($customers);
+
+    }
+
+
+
+    /*Generated Credit Memo*/
+
+
+        public function actionGenerateCreditMemo()
+    {
+        
+        $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
+
+        //Get LIS customers
+
+        $customers = $this->actionunpostedmemos(5);
+
+        // convert json to php object
+
+        $transformedCustomers = json_decode($customers);
+
+        // print '<pre>'; print_r($transformedCustomers); exit;
+
+        // Loop through the transformedCustomers array of objects creating a Nav Payload
+        $navArgs = [];
+        $i = 0;
+
+        //print '<pre>';
+        // print_r($transformedCustomers); exit;
+        foreach($transformedCustomers as $tcus)
+        {
+          
+                  ++$i;
+                $navArgs[$i] = [
+                                'No'                        => $tcus->accountcode,
+                                'Name'                      => $tcus->accountname,
+                                'Search_Name'               => $tcus->accountname,
+                                'Customer_Posting_Group'    => 'Credit',
+                                'VAT_Bus_Posting_Group'     => 'LOCAL',
+                                'Gen_Bus_Posting_Group'     => 'LOCAL',
+                                'auto_number'               => $tcus->auto_number,
+                                'testcode' => $tcus->testcode,
+                                'testrate' => $tcus->testrate,
+                                'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
+                                'postingD' => $tcus->patientname,
+                                'discountamount' => $tcus->discountamount,
+                                'employeeN' => $tcus->docno.' '.$tcus->file_no,
+                                'totalamount' => $tcus->totalamount
+                            ];    
+                
+        }
+
+
+
+       
+            // INVOICE IN NAV
+            foreach($navArgs as $customer)
+            {
+
+                
+                // Header Arguments
+                $CuArgs = [
+                    'custNoa46' => $customer['No'],
+                    'programH' => 'NDL',
+                    'departmentH' => 'LAB-001',
+                    'pdate' => $customer['billdatetime'],
+                    'postingD' => $customer['postingD'],
+                    'employeeN' => $customer['employeeN']
+                ];
+
+                // Create Invoice Header IanCreateInvoiceH
+
+                $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateMemoH');
+
+                print "<br /> C. Memo Header....".var_dump($result);
+
+                if(!empty($result['return_value']) && is_string($result['return_value']))
+                {
+                     /* Create Invoice Lines*/
+
+                        // Mark Cusultation as Refunded
+                        $this->refund($customer['auto_number']);
+
+                            // Lines Arguments
+
+                             $LineArgs = [
+                                'invNo' => $result['return_value'],
+                                'categoryL' => $customer['testcode'],
+                                'quantityL' => 1,
+                                'unitpriceL' => $customer['totalamount'], // credit memo amount - refund
+                                'programH' => 'NDL',
+                                'departmentH' => 'LAB-001',
+                                'discountA' => $customer['discountamount'],
+
+                            ];
+
+                            // Invoke code Unit Line Creation Function
+
+                           $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateMemoL' );
+
+                           
+                            print "<br /> C .memo Line .....".var_dump($lineResult);
+
+
+
+
+                        // Post Invoice
+
+                         $postingArgs= [
+                            'inv1' => $result['return_value']
+                         ];
+
+                         $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
+
+
+                         print "<br /> Posting .....".var_dump($postingResult);
+
+                }
+                
+               
+               sleep(1); // Add some latency 
+            }
+            
+    }
+
+
+
+
+    /*Metrics - Unposted  refunds*/
+
+
+    public function actionMetricsunpostedmemos($threshold = 300)
+    {
+
+
+        $customers = ConsultationLab::find()
+        ->where(['NOT',['accountcode' => '']])
+        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        ->andWhere(['>','testrate', 0])
+        ->andWhere(['Invoiced' => 1])
+        ->andWhere(['>','totalamount', 0])
+        ->andWhere(['refund_flag' => 0])
+         ->limit($threshold)
+        ->orderBy('auto_number ASC')
+        ->asArray()
+        ->all();
+
+    
+        return 'Unposted refunds are :'.count($customers);
+
+    }
+
+
+    /*Metrics - Posted Refunds*/
+
+
+ public function actionMetricspostedmemos($threshold = 100)
+    {
+
+
+        $refunds = ConsultationLab::find()
+        ->where(['NOT',['accountcode' => '']])
+        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        ->andWhere(['>','testrate', 0])
+        ->andWhere(['Invoiced' => 1])
+        ->andWhere(['>','totalamount', 0])
+        ->andWhere(['refund_flag' => 1])
+       // ->limit($threshold)
+        ->orderBy('auto_number ASC')
+        ->asArray()
+        ->all();
+
+    
+        return 'Posted refunds are :'.count($refunds);
+
+    }
 
 
 
@@ -430,6 +631,29 @@ class SiteController extends Controller
     }
 
 
+    /*Mark as Refunded*/
+     public function refund($auto_number)
+    {
+
+
+       $connection = Yii::$app->db;
+
+       $result = $connection->createCommand()
+        ->update('consultation_lab',['refund_flag' => 1], 'auto_number = '.$auto_number)
+        ->execute();
+
+       /* $model = ConsultationLab::findOne(['auto_number' => $auto_number]);
+        $model->refund_flag = 1;
+        $model->save(false);*/
+
+
+
+       // var_dump($result);
+       
+
+    }
+
+
 
 /*Get a count of all invoice entries*/
 
@@ -484,14 +708,14 @@ class SiteController extends Controller
 
         $transformedCustomers = json_decode($customers);
 
-        //  print '<pre>'; print_r($transformedCustomers); exit;
+       // print '<pre>'; print_r($transformedCustomers); exit;
 
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
         $i = 0;
 
-    //print '<pre>';
-      // print_r($transformedCustomers); exit;
+        //print '<pre>';
+        // print_r($transformedCustomers); exit;
         foreach($transformedCustomers as $tcus)
         {
           
@@ -509,6 +733,7 @@ class SiteController extends Controller
                                 'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
                                 'postingD' => $tcus->patientname,
                                 'discountamount' => $tcus->discountamount,
+                                'employeeN' => $tcus->file_no
                             ];    
                 
         }
@@ -516,73 +741,74 @@ class SiteController extends Controller
 
 
        
-        // INVOICE IN NAV
-        foreach($navArgs as $customer)
-        {
-
-            
-            // Header Arguments
-            $CuArgs = [
-                'custNoa46' => $customer['No'],
-                'programH' => 'NDL',
-                'departmentH' => 'LAB-001',
-                'pdate' => $customer['billdatetime'],
-                'postingD' => $customer['postingD']
-            ];
-
-            // Create Invoice Header IanCreateInvoiceH
-
-            $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
-
-            print "<br /> Header....".var_dump($result);
-
-            if(!empty($result['return_value']) && is_string($result['return_value']))
+            // INVOICE IN NAV
+            foreach($navArgs as $customer)
             {
-                 /* Create Invoice Lines*/
 
-                    // Mark Cusultation as invoiced
-                    $this->invoice($customer['auto_number']);
+                
+                // Header Arguments
+                $CuArgs = [
+                    'custNoa46' => $customer['No'],
+                    'programH' => 'NDL',
+                    'departmentH' => 'LAB-001',
+                    'pdate' => $customer['billdatetime'],
+                    'postingD' => $customer['postingD'],
+                    'employeeN' => $customer['employeeN']
+                ];
 
-                        // Lines Arguments
+                // Create Invoice Header IanCreateInvoiceH
 
-                         $LineArgs = [
-                            'invNo' => $result['return_value'],
-                            'categoryL' => $customer['testcode'],
-                            'quantityL' => 1,
-                            'unitpriceL' => $customer['testrate'],
-                            'programH' => 'NDL',
-                            'departmentH' => 'LAB-001',
-                            'discountA' => $customer['discountamount'],
+                $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
 
-                        ];
+                print "<br /> Header....".var_dump($result);
 
-                        // Invoke code Unit Line Creation Function
+                if(!empty($result['return_value']) && is_string($result['return_value']))
+                {
+                     /* Create Invoice Lines*/
 
-                       $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
+                        // Mark Cusultation as invoiced
+                        $this->invoice($customer['auto_number']);
 
-                       
-                        print "<br /> Line .....".var_dump($lineResult);
+                            // Lines Arguments
+
+                             $LineArgs = [
+                                'invNo' => $result['return_value'],
+                                'categoryL' => $customer['testcode'],
+                                'quantityL' => 1,
+                                'unitpriceL' => $customer['testrate'],
+                                'programH' => 'NDL',
+                                'departmentH' => 'LAB-001',
+                                'discountA' => $customer['discountamount'],
+
+                            ];
+
+                            // Invoke code Unit Line Creation Function
+
+                           $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
+
+                           
+                            print "<br /> Line .....".var_dump($lineResult);
 
 
 
 
-                    // Post Invoice
+                        // Post Invoice
 
-                     $postingArgs= [
-                        'inv1' => $result['return_value']
-                     ];
+                         $postingArgs= [
+                            'inv1' => $result['return_value']
+                         ];
 
-                     $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
+                         $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
 
 
-                     print "<br /> Posting .....".var_dump($postingResult);
+                         print "<br /> Posting .....".var_dump($postingResult);
 
+                }
+                
+               
+               sleep(1); // Add some latency 
             }
             
-           
-           sleep(1); // Add some latency 
-        }
-        
     }
 
 

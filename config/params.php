@@ -12,6 +12,8 @@ return [
     'ServerInstance'=>'BC140',//Nav Server Instance
     'CompanyName'=>'COGRI',//Nav Company,
 
+    'IvanPwd' => 'COGRIndl@2016.',
+
 
 
     'codeUnits' => [

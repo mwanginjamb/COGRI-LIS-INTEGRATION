@@ -75,6 +75,7 @@ use Yii;
  * @property string $refund_initiateddate
  * @property string $refund_approvedby
  * @property string $refund_approveddate
+ * @property string $refund_flag
  */
 class ConsultationLab extends \yii\db\ActiveRecord
 {
@@ -97,6 +98,8 @@ class ConsultationLab extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            ['Invoiced', 'integer'],
+            ['refund_flag','safe'],
             [['patientname', 'patientcode', 'accountname', 'accountcode', 'gender', 'age', 'agegroup', 'dateofbirth', 'typeofpatient', 'doctor', 'accountho', 'desprepotno', 'testname', 'categoryname', 'testcode', 'testrate', 'urgent', 'invno', 'docno', 'sampledocno', 'labsamplecoll', 'labrefund', 'refundapprove', 'paymentmode', 'totalamount', 'ipaddress', 'username', 'storename', 'storecode', 'discountpercent', 'discountamount', 'subtotal', 'locationname', 'locationcode', 'consultationdate', 'consultationtime', 'samplecollectedon', 'resultentry', 'resultdoc', 'publishstatus', 'cashrecd', 'balamount', 'bankname', 'cardno', 'mpesano', 'mpesaamount', 'cardamount', 'cashamount', 'chequeamount', 'chequebankname', 'chequeno', 'chequedate', 'labrefundstatus', 'billdatetime', 'printorder', 'status', 'originalstatus', 'batchnumber', 'mrdno', 'acc_editedby', 'acc_updatedatetime', 'flag', 'refund_initiatedby', 'refund_initiateddate', 'refund_approvedby', 'refund_approveddate'], 'required'],
             [['dateofbirth', 'consultationdate', 'consultationtime', 'samplecollectedon', 'chequedate', 'billdatetime', 'acc_updatedatetime', 'refund_initiateddate', 'refund_approveddate'], 'safe'],
             [['testrate', 'totalamount', 'discountpercent', 'discountamount', 'subtotal', 'mpesaamount', 'cardamount', 'cashamount', 'chequeamount'], 'number'],
