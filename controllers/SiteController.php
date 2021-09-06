@@ -186,6 +186,8 @@ class SiteController extends Controller
         {
 
                  $result = Yii::$app->navhelper->postData($service, $customer);
+                 $log = print_r($result, true);
+                 $this->logger($log,'Customer');
 
                 if(!is_string($result))
                 {                    
@@ -255,12 +257,23 @@ class SiteController extends Controller
 
                  $result = Yii::$app->navhelper->postData($service, $customer);
 
+
+                 $log = print_r($result, true);
+                 $this->logger($log,'Customer');
+
                 if(is_object($result))
-                {                    
-                    '<br /> Success: '.var_dump($this->flag($customer['auto_number']));
+                {  
+                    // Flag as created 
+                   $flag =  $this->flag($customer['auto_number']);                  
+                    '<br /> Success: '.var_dump($flag);
+
+                    $log = print_r($flag, true);
+                    $this->logger($log,'Customer');
+
                 }else
                 {
                     print '<br/> Error....'.$result;
+                   
                 }
             
            
@@ -400,7 +413,7 @@ class SiteController extends Controller
 
 
        
-            // INVOICE IN NAV
+            // Do credit memo
             foreach($navArgs as $customer)
             {
 
@@ -415,11 +428,14 @@ class SiteController extends Controller
                     'employeeN' => $customer['employeeN']
                 ];
 
-                // Create Invoice Header IanCreateInvoiceH
+                // Create credit memo Header IanCreateInvoiceH
 
                 $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateMemoH');
 
                 print "<br /> C. Memo Header....".var_dump($result);
+
+                $log = print_r($result, true);
+                $this->logger($log,'Memo');
 
                 if(!empty($result['return_value']) && is_string($result['return_value']))
                 {
@@ -448,10 +464,15 @@ class SiteController extends Controller
                            
                             print "<br /> C .memo Line .....".var_dump($lineResult);
 
+                            // Log C.Memo Lines commit
+
+                            $log = print_r($lineResult, true);
+                            $this->logger($log,'Memo');
 
 
 
-                        // Post Invoice
+
+                        // Post C.memo
 
                          $postingArgs= [
                             'inv1' => $result['return_value']
@@ -461,6 +482,9 @@ class SiteController extends Controller
 
 
                          print "<br /> Posting .....".var_dump($postingResult);
+
+                         $log = print_r($postingResult, true);
+                         $this->logger($log,'Memo');
 
                 }
                 
@@ -731,7 +755,7 @@ class SiteController extends Controller
                                 'testcode' => $tcus->testcode,
                                 'testrate' => $tcus->testrate,
                                 'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'postingD' => $tcus->patientname,
+                                'postingD' =>  $tcus->docno.' - '.$tcus->patientname,
                                 'discountamount' => $tcus->discountamount,
                                 'employeeN' => $tcus->file_no
                             ];    
@@ -761,6 +785,9 @@ class SiteController extends Controller
                 $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
 
                 print "<br /> Header....".var_dump($result);
+                $log = print_r($result, true);
+                // Log this as an Invoice
+                $this->logger($log,'Invoice');
 
                 if(!empty($result['return_value']) && is_string($result['return_value']))
                 {
@@ -789,6 +816,10 @@ class SiteController extends Controller
                            
                             print "<br /> Line .....".var_dump($lineResult);
 
+                            // Log Invoice Lines
+                            $log = print_r($lineResult, true);
+                            $this->logger($log, 'Invoice');
+
 
 
 
@@ -803,6 +834,11 @@ class SiteController extends Controller
 
                          print "<br /> Posting .....".var_dump($postingResult);
 
+                         // Log Invoice Posting Results
+
+                         $log = print_r($postingResult, true);
+                         $this->logger($log,'Invoice');
+
                 }
                 
                
@@ -810,6 +846,27 @@ class SiteController extends Controller
             }
             
     }
+
+    private function logger($message, $type)
+	{
+        if($type == 'Invoice')
+        {
+            $filename = 'log/invoice.txt';
+        }
+        elseif($type == 'Memo') 
+        {
+            $filename = 'log/memo.txt';
+        }
+        elseif($type == 'Customer') 
+        {
+            $filename = 'log/Customer.txt';
+        }
+		
+		$req_dump = print_r($message, TRUE);
+		$fp = fopen($filename, 'a');
+		fwrite($fp, $req_dump);
+		fclose($fp);
+	}
 
 
 }
