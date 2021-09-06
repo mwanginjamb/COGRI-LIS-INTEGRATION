@@ -389,9 +389,9 @@ class SiteController extends Controller
                                 'testcode' => $tcus->testcode,
                                 'testrate' => $tcus->testrate,
                                 'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'postingD' => $tcus->patientname,
+                                'postingD' => $tcus->docno.' - '.$tcus->patientname,
                                 'discountamount' => $tcus->discountamount,
-                                'employeeN' => $tcus->docno.' '.$tcus->file_no,
+                                'employeeN' => $tcus->file_no,
                                 'totalamount' => $tcus->totalamount
                             ];    
                 
