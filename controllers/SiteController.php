@@ -320,7 +320,7 @@ class SiteController extends Controller
 
         $customers = ConsultationLab::find()
         ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        ->andWhere(['>','billdatetime', '2021-07-01 00:00:00'])
         ->andWhere(['>','testrate', 0])
         ->andWhere(['Invoiced' => 0])
         ->limit($threshold)
@@ -441,8 +441,7 @@ class SiteController extends Controller
                 {
                      /* Create Invoice Lines*/
 
-                        // Mark Cusultation as Refunded
-                        $this->refund($customer['auto_number']);
+                       
 
                             // Lines Arguments
 
@@ -461,7 +460,11 @@ class SiteController extends Controller
 
                            $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateMemoL' );
 
-                           
+                           if(is_array($lineResult) && $lineResult['return_value'] == 1) 
+                           {
+                                 // Mark Cusultation as Refunded
+                                $this->refund($customer['auto_number']);
+                           }
                             print "<br /> C .memo Line .....".var_dump($lineResult);
 
                             // Log C.Memo Lines commit
@@ -722,7 +725,8 @@ class SiteController extends Controller
     {
          // return 1;
             /*@challenge what do we do with records without patientcode or accountcode --> walkins? */
-        $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
+       $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
+       $PageService = Yii::$app->params['ServiceName']['SaleInvPortal'];
 
         //Get LIS customers
 
@@ -770,7 +774,18 @@ class SiteController extends Controller
             {
 
                 
-                // Header Arguments
+                // Header Arguments for Page Service
+
+                $PageArgs = [
+                    'Sell_to_Customer_No' => $customer['No'],
+                    'Shortcut_Dimension_1_Code' => 'NDL',
+                    'Shortcut_Dimension_2_Code' => 'LAB-001',
+                    'Posting_Date' => $customer['billdatetime'],
+                    'Posting_Description' => $customer['postingD'],
+                    //'Employee_No' => $customer['employeeN']
+                ];
+
+                 // Header Arguments for Codeunit Service
                 $CuArgs = [
                     'custNoa46' => $customer['No'],
                     'programH' => 'NDL',
@@ -782,39 +797,46 @@ class SiteController extends Controller
 
                 // Create Invoice Header IanCreateInvoiceH
 
-                $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
-
-                print "<br /> Header....".var_dump($result);
-                $log = print_r($result, true);
+               // $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
+                $result = Yii::$app->navhelper->postData($PageService,$PageArgs);
+               
+                $InvoiceLog =  $result;
+                $log = print_r($InvoiceLog, true);
                 // Log this as an Invoice
                 $this->logger($log,'Invoice');
 
-                if(!empty($result['return_value']) && is_string($result['return_value']))
+                if(is_object($result) && $result->No)
                 {
+                    echo 'Posting...............'.$result->No;
                      /* Create Invoice Lines*/
-
-                        // Mark Cusultation as invoiced
-                        $this->invoice($customer['auto_number']);
 
                             // Lines Arguments
 
                              $LineArgs = [
-                                'invNo' => $result['return_value'],
+                                'invNo' => $result->No,
                                 'categoryL' => $customer['testcode'],
                                 'quantityL' => 1,
                                 'unitpriceL' => $customer['testrate'],
                                 'programH' => 'NDL',
                                 'departmentH' => 'LAB-001',
-                                'discountA' => $customer['discountamount'],
+                                'discountA' => $customer['discountamount']
 
                             ];
+
+                            $this->logger('Line To Commit ........', 'Invoice');
+
+                            $this->logger($LineArgs, 'Invoice');
 
                             // Invoke code Unit Line Creation Function
 
                            $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
 
                            
-                            print "<br /> Line .....".var_dump($lineResult);
+                           if(is_array($lineResult) && $lineResult['return_value'] == 1) 
+                           {
+                                 // Mark Cusultation as invoiced
+                                $this->invoice($customer['auto_number']);
+                           }
 
                             // Log Invoice Lines
                             $log = print_r($lineResult, true);
@@ -826,23 +848,24 @@ class SiteController extends Controller
                         // Post Invoice
 
                          $postingArgs= [
-                            'inv1' => $result['return_value']
+                            'inv1' => $result->No 
                          ];
 
                          $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
 
 
-                         print "<br /> Posting .....".var_dump($postingResult);
+                         $postingLog =  $postingResult;
 
                          // Log Invoice Posting Results
 
-                         $log = print_r($postingResult, true);
+                         $log = print_r($postingLog , true);
                          $this->logger($log,'Invoice');
 
                 }
                 
                
-               sleep(1); // Add some latency 
+               sleep(2); // Add some latency 
+              // exit;
             }
             
     }
