@@ -782,7 +782,7 @@ class SiteController extends Controller
                     'Shortcut_Dimension_2_Code' => 'LAB-001',
                     'Posting_Date' => $customer['billdatetime'],
                     'Posting_Description' => $customer['postingD'],
-                    //'Employee_No' => $customer['employeeN']
+                    'Employee_No' => $customer['employeeN']
                 ];
 
                  // Header Arguments for Codeunit Service
