@@ -761,7 +761,7 @@ class SiteController extends Controller
                                 'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
                                 'postingD' =>  $tcus->docno.' - '.$tcus->patientname,
                                 'discountamount' => $tcus->discountamount,
-                                'employeeN' => $tcus->file_no
+                                'employeeN' => $tcus->employeeno, //file_no
                             ];    
                 
         }
