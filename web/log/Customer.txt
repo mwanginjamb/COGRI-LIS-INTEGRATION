@@ -1,0 +1,402 @@
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANg==9;3069527101;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANg==9;3069527100;
+    [No] => ACC00000076
+    [Name] => CHIROMO LANE MEDICAL CENTER LIMITED
+    [Search_Name] => CHIROMO LANE MEDICAL CENTER LIMITED
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2021-10-19
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000076
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANg==9;3069527100;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANw==9;3113789311;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANw==9;3113789310;
+    [No] => ACC00000077
+    [Name] => LVCT GROUP LTD
+    [Search_Name] => LVCT GROUP LTD
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2021-10-30
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000077
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcANw==9;3113789310;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOA==9;3404248161;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOA==9;3404248160;
+    [No] => ACC00000078
+    [Name] => KEMRI CRDR CLINICAL RESEARCH ANNEX - VAT00008
+    [Search_Name] => KEMRI CRDR CLINICAL RESEARCH ANNEX - VAT00008
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2022-01-24
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000078
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOA==9;3404248160;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOQ==9;3425759311;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOQ==9;3425759310;
+    [No] => ACC00000079
+    [Name] => CHINA WU YI CO., LTD(104)
+    [Search_Name] => CHINA WU YI CO., LTD(104)
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2022-01-28
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000079
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADcAOQ==9;3425759310;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMA==9;3425799441;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMA==9;3425799440;
+    [No] => ACC00000080
+    [Name] => CHINA WU YI CO LTD(104)
+    [Search_Name] => CHINA WU YI CO LTD(104)
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2022-01-28
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000080
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMA==9;3425799440;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMQ==9;3448860821;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMQ==9;3448860820;
+    [No] => ACC00000081
+    [Name] => MEDI-HUB HEALTHCARE LIMITED
+    [Search_Name] => MEDI-HUB HEALTHCARE LIMITED
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2022-02-02
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000081
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMQ==9;3448860820;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)

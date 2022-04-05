@@ -26,6 +26,8 @@ return [
     	'CustomerPortal' => 'CustomerPortal',
         'CustomersList' =>  'CustomersList',
         'Create_Invoice_Portal' => 'Create_Invoice_Portal',
-        'SaleInvPortal' => 'SaleInvPortal'
+        'SaleInvPortal' => 'SaleInvPortal',
+        'LISInvoices' => 'LISInvoices', // uSE THIS TO SEND invoice entries to Nav
+        'LISCreditmemo' => 'LISCreditmemo', // uSE this for credit memo
     ],
 ];

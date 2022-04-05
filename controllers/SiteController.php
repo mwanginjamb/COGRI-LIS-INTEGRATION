@@ -314,13 +314,13 @@ class SiteController extends Controller
 
 
 
-    public function actionInvoiceableCustomers($threshold = 10)
+    public function actionInvoiceableCustomers($threshold = 1)
     {
 
 
         $customers = ConsultationLab::find()
         ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-07-01 00:00:00'])
+        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
         ->andWhere(['>','testrate', 0])
         ->andWhere(['Invoiced' => 0])
         ->limit($threshold)
@@ -343,14 +343,13 @@ class SiteController extends Controller
     public function actionUnpostedmemos($threshold = 30)
     {
 
+        //@property string $labrefund
+       //@property string $refundapprove = 'Approved'
 
         $customers = ConsultationLab::find()
-        ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
-        ->andWhere(['>','testrate', 0])
-        ->andWhere(['Invoiced' => 1])
-        ->andWhere(['>','totalamount', 0])
-        ->andWhere(['refund_flag' => '0'])
+        ->where(['refundapprove' => 'Approved'])
+        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
+        ->andWhere(['refund_flag' => 0])
         ->limit($threshold)
         ->orderBy('auto_number ASC')
         ->asArray()
@@ -368,44 +367,34 @@ class SiteController extends Controller
 
         public function actionGenerateCreditMemo()
     {
-        
-        $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
-
+        $service = Yii::$app->params['ServiceName']['LISCreditmemo'];
         //Get LIS customers
-
-        $customers = $this->actionunpostedmemos(5);
-
+        $customers = $this->actionunpostedmemos(15);
         // convert json to php object
-
         $transformedCustomers = json_decode($customers);
-
         // print '<pre>'; print_r($transformedCustomers); exit;
-
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
         $i = 0;
 
-        //print '<pre>';
-        // print_r($transformedCustomers); exit;
+
         foreach($transformedCustomers as $tcus)
         {
           
                   ++$i;
                 $navArgs[$i] = [
-                                'No'                        => $tcus->accountcode,
-                                'Name'                      => $tcus->accountname,
-                                'Search_Name'               => $tcus->accountname,
-                                'Customer_Posting_Group'    => 'Credit',
-                                'VAT_Bus_Posting_Group'     => 'LOCAL',
-                                'Gen_Bus_Posting_Group'     => 'LOCAL',
-                                'auto_number'               => $tcus->auto_number,
-                                'testcode' => $tcus->testcode,
-                                'testrate' => $tcus->testrate,
-                                'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'postingD' => $tcus->docno.' - '.$tcus->patientname,
-                                'discountamount' => $tcus->discountamount,
-                                'employeeN' => $tcus->file_no,
-                                'totalamount' => $tcus->totalamount
+                                'LIS_Document_No' => $tcus->invno,                 
+                                'CreditNoteNo' => $tcus->docno,
+                                'Quantity' => 0.0,
+                                'Category'     => $tcus->categoryname,
+                                'Entry_No' => $tcus->auto_number,
+                                'CustomeNo' => $tcus->accountcode,
+                                'TestCode' => $tcus->testcode,
+                                'LineAmount' => $tcus->testrate,
+                                'InvoiceDate' => date('Y-m-d',strtotime($tcus->billdatetime)),
+                                'Description' =>  $tcus->testname.' - '.$tcus->docno.' - '.$tcus->patientname,
+                                'DiscountAmount' => $tcus->discountper_item, //$tcus->discountamount,
+                                'EmployeeNo' => $tcus->employeeno, //file_no
                             ];    
                 
         }
@@ -414,85 +403,39 @@ class SiteController extends Controller
 
        
             // Do credit memo
-            foreach($navArgs as $customer)
+            if(!count($navArgs)){
+                echo 'No Credit Memo to Record ';
+                $this->logger('NO records to Commit..','Memo');
+                exit();
+            }
+            foreach($navArgs as $memo)
             {
-
-                
-                // Header Arguments
-                $CuArgs = [
-                    'custNoa46' => $customer['No'],
-                    'programH' => 'NDL',
-                    'departmentH' => 'LAB-001',
-                    'pdate' => $customer['billdatetime'],
-                    'postingD' => $customer['postingD'],
-                    'employeeN' => $customer['employeeN']
-                ];
-
-                // Create credit memo Header IanCreateInvoiceH
-
-                $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateMemoH');
-
-                print "<br /> C. Memo Header....".var_dump($result);
-
+  
+                $result = Yii::$app->navhelper->postData($service, $memo);
+               
+                print '<pre>';
+                echo 'Credit Memo Record Committed ...............';
+                print_r($result);
+            
                 $log = print_r($result, true);
                 $this->logger($log,'Memo');
 
-                if(!empty($result['return_value']) && is_string($result['return_value']))
+                if(is_object($result) && $result->Key)
                 {
-                     /* Create Invoice Lines*/
 
-                       
+                    $flag =  $this->refund($memo['Entry_No']);  
+                    echo 'Memo Record Flagged as refunded...............';
 
-                            // Lines Arguments
-
-                             $LineArgs = [
-                                'invNo' => $result['return_value'],
-                                'categoryL' => $customer['testcode'],
-                                'quantityL' => 1,
-                                'unitpriceL' => $customer['totalamount'], // credit memo amount - refund
-                                'programH' => 'NDL',
-                                'departmentH' => 'LAB-001',
-                                'discountA' => $customer['discountamount'],
-
-                            ];
-
-                            // Invoke code Unit Line Creation Function
-
-                           $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateMemoL' );
-
-                           if(is_array($lineResult) && $lineResult['return_value'] == 1) 
-                           {
-                                 // Mark Cusultation as Refunded
-                                $this->refund($customer['auto_number']);
-                           }
-                            print "<br /> C .memo Line .....".var_dump($lineResult);
-
-                            // Log C.Memo Lines commit
-
-                            $log = print_r($lineResult, true);
-                            $this->logger($log,'Memo');
-
-
-
-
-                        // Post C.memo
-
-                         $postingArgs= [
-                            'inv1' => $result['return_value']
-                         ];
-
-                         $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
-
-
-                         print "<br /> Posting .....".var_dump($postingResult);
-
-                         $log = print_r($postingResult, true);
-                         $this->logger($log,'Memo');
+                    print_r($flag);
+                    
+                    $log = print_r($flag , true);
+                    $this->logger($log,'Memo');
 
                 }
                 
                
-               sleep(1); // Add some latency 
+               sleep(2); // Add some latency  
+               
             }
             
     }
@@ -508,13 +451,10 @@ class SiteController extends Controller
 
 
         $customers = ConsultationLab::find()
-        ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
-        ->andWhere(['>','testrate', 0])
-        ->andWhere(['Invoiced' => 1])
-        ->andWhere(['>','totalamount', 0])
+        ->where(['refundapprove' => 'Approved'])
+        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
         ->andWhere(['refund_flag' => 0])
-         ->limit($threshold)
+        // ->limit($threshold)
         ->orderBy('auto_number ASC')
         ->asArray()
         ->all();
@@ -533,11 +473,8 @@ class SiteController extends Controller
 
 
         $refunds = ConsultationLab::find()
-        ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
-        ->andWhere(['>','testrate', 0])
-        ->andWhere(['Invoiced' => 1])
-        ->andWhere(['>','totalamount', 0])
+        ->where(['refundapprove' => 'Approved'])
+        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])       
         ->andWhere(['refund_flag' => 1])
        // ->limit($threshold)
         ->orderBy('auto_number ASC')
@@ -553,7 +490,7 @@ class SiteController extends Controller
 
 /*Get walkin customers --> cystomer no is invno*/
 
-    public function actionLisWalkinCustomers($threshold = 50)
+    public function actionLisWalkinCustomers($threshold = 1)
     {
 
 
@@ -587,8 +524,10 @@ class SiteController extends Controller
        $connection = Yii::$app->db;
 
        $result = $connection->createCommand()
-        ->update('consultation_lab',['flag' => 0], 'flag > 0')
+        ->update('consultation_lab',['Invoiced' => 0], 'Invoiced > 0')
         ->execute();
+
+        //->andWhere(['Invoiced' => 0])
 
 
         var_dump($result);
@@ -619,7 +558,7 @@ class SiteController extends Controller
        $connection = Yii::$app->db;
 
        $result = $connection->createCommand()
-        ->update('master_accountdetails',['flag' => 1], 'auto_number = '.$auto_number)
+        ->update('consultation_lab',['Invoiced' => 1], 'auto_number = '.$auto_number)
         ->execute();
 
 
@@ -631,8 +570,8 @@ class SiteController extends Controller
     public function actionFlagged()
     {
 
-        $model = MasterAccountdetails::find()
-        ->where(['flag' => 1])
+        $model = ConsultationLab::find()
+        ->where(['Invoiced' => 1])
         ->count();
 
         print '<Pre>';
@@ -652,7 +591,7 @@ class SiteController extends Controller
         ->execute();
 
 
-       // var_dump($result);
+       var_dump($result);
        
 
     }
@@ -661,22 +600,15 @@ class SiteController extends Controller
     /*Mark as Refunded*/
      public function refund($auto_number)
     {
-
+       
 
        $connection = Yii::$app->db;
 
        $result = $connection->createCommand()
         ->update('consultation_lab',['refund_flag' => 1], 'auto_number = '.$auto_number)
-        ->execute();
-
-       /* $model = ConsultationLab::findOne(['auto_number' => $auto_number]);
-        $model->refund_flag = 1;
-        $model->save(false);*/
-
-
-
-       // var_dump($result);
-       
+        ->execute(); 
+        
+        return $result;
 
     }
 
@@ -723,48 +655,50 @@ class SiteController extends Controller
 
     public function actionGenerateInvoice()
     {
-         // return 1;
-            /*@challenge what do we do with records without patientcode or accountcode --> walkins? */
-       $service = Yii::$app->params['ServiceName']['Create_Invoice_Portal'];
-       $PageService = Yii::$app->params['ServiceName']['SaleInvPortal'];
 
+    
+        
+       $service = Yii::$app->params['ServiceName']['LISInvoices'];
+      
         //Get LIS customers
 
-        $customers = $this->actionInvoiceableCustomers(5);
+        $customers = $this->actionInvoiceableCustomers(10);
 
         // convert json to php object
 
         $transformedCustomers = json_decode($customers);
 
-       // print '<pre>'; print_r($transformedCustomers); exit;
+       //print '<pre>'; print_r($transformedCustomers); exit;
 
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
         $i = 0;
 
-        //print '<pre>';
-        // print_r($transformedCustomers); exit;
+       
+       
         foreach($transformedCustomers as $tcus)
         {
           
                   ++$i;
                 $navArgs[$i] = [
-                                'No'                        => $tcus->accountcode,
-                                'Name'                      => $tcus->accountname,
-                                'Search_Name'               => $tcus->accountname,
-                                'Customer_Posting_Group'    => 'Credit',
-                                'VAT_Bus_Posting_Group'     => 'LOCAL',
-                                'Gen_Bus_Posting_Group'     => 'LOCAL',
-                                'auto_number'               => $tcus->auto_number,
-                                'testcode' => $tcus->testcode,
-                                'testrate' => $tcus->testrate,
-                                'billdatetime' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'postingD' =>  $tcus->docno.' - '.$tcus->patientname,
-                                'discountamount' => $tcus->discountamount,
-                                'employeeN' => $tcus->employeeno, //file_no
+                                'InvoiceNo' => $tcus->invno,
+                                
+                                'LIS_Document_No' => $tcus->docno,
+                                'Quantity' => 0.0,
+                                'Category'     => $tcus->categoryname,
+                                'Entry_No' => $tcus->auto_number,
+                                'CustomeNo' => $tcus->accountcode,
+                                'TestCode' => $tcus->testcode,
+                                'LineAmount' => $tcus->testrate,
+                                'InvoiceDate' => date('Y-m-d',strtotime($tcus->billdatetime)),
+                                'Description' =>  $tcus->testname.' - '.$tcus->docno.' - '.$tcus->patientname,
+                                'DiscountAmount' => $tcus->discountper_item, //$tcus->discountamount,
+                                'EmployeeNo' => $tcus->employeeno, //file_no
                             ];    
                 
         }
+
+       
 
 
 
@@ -774,92 +708,26 @@ class SiteController extends Controller
             {
 
                 
-                // Header Arguments for Page Service
-
-                $PageArgs = [
-                    'Sell_to_Customer_No' => $customer['No'],
-                    'Shortcut_Dimension_1_Code' => 'NDL',
-                    'Shortcut_Dimension_2_Code' => 'LAB-001',
-                    'Posting_Date' => $customer['billdatetime'],
-                    'Posting_Description' => $customer['postingD'],
-                    'Employee_No' => $customer['employeeN']
-                ];
-
-                 // Header Arguments for Codeunit Service
-                $CuArgs = [
-                    'custNoa46' => $customer['No'],
-                    'programH' => 'NDL',
-                    'departmentH' => 'LAB-001',
-                    'pdate' => $customer['billdatetime'],
-                    'postingD' => $customer['postingD'],
-                    'employeeN' => $customer['employeeN']
-                ];
-
-                // Create Invoice Header IanCreateInvoiceH
-
-               // $result = Yii::$app->navhelper->Cogri($service, $CuArgs,'IanCreateInvoiceH');
-                $result = Yii::$app->navhelper->postData($PageService,$PageArgs);
+                
+                $result = Yii::$app->navhelper->postData($service, $customer);
                
+                print '<pre>';
+                echo 'Record Invoiced...............';
+                print_r($result);
                 $InvoiceLog =  $result;
                 $log = print_r($InvoiceLog, true);
-                // Log this as an Invoice
                 $this->logger($log,'Invoice');
 
-                if(is_object($result) && $result->No)
+                if(is_object($result) && $result->Key)
                 {
-                    echo 'Posting...............'.$result->No;
-                     /* Create Invoice Lines*/
 
-                            // Lines Arguments
+                    $flag =  $this->Invoice($customer['Entry_No']);  
+                    echo 'Invoice...............';
 
-                             $LineArgs = [
-                                'invNo' => $result->No,
-                                'categoryL' => $customer['testcode'],
-                                'quantityL' => 1,
-                                'unitpriceL' => $customer['testrate'],
-                                'programH' => 'NDL',
-                                'departmentH' => 'LAB-001',
-                                'discountA' => $customer['discountamount']
-
-                            ];
-
-                            $this->logger('Line To Commit ........', 'Invoice');
-
-                            $this->logger($LineArgs, 'Invoice');
-
-                            // Invoke code Unit Line Creation Function
-
-                           $lineResult =  Yii::$app->navhelper->Cogri($service, $LineArgs, 'IanCreateInvoiceL' );
-
-                           
-                           if(is_array($lineResult) && $lineResult['return_value'] == 1) 
-                           {
-                                 // Mark Cusultation as invoiced
-                                $this->invoice($customer['auto_number']);
-                           }
-
-                            // Log Invoice Lines
-                            $log = print_r($lineResult, true);
-                            $this->logger($log, 'Invoice');
-
-
-
-
-                        // Post Invoice
-
-                         $postingArgs= [
-                            'inv1' => $result->No 
-                         ];
-
-                         $postingResult = Yii::$app->navhelper->Cogri($service, $postingArgs, 'IanPostInvoice' );
-
-
-                         $postingLog =  $postingResult;
-
-                         // Log Invoice Posting Results
-
-                         $log = print_r($postingLog , true);
-                         $this->logger($log,'Invoice');
+                    print_r($flag);
+                    
+                    $log = print_r($flag , true);
+                    $this->logger($log,'Invoice');
 
                 }
                 
