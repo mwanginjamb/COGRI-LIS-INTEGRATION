@@ -400,3 +400,70 @@ stdClass Object
         )
 
 )
+stdClass Object
+(
+    [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMg==9;3679896721;22;AgedAccReceivableChart1;40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMg==9;3679896720;
+    [No] => ACC00000082
+    [Name] => KEMRI CRDR CLINICAL RESEARCH ANNEX - GBT
+    [Search_Name] => KEMRI CRDR CLINICAL RESEARCH ANNEX - GBT
+    [Balance_LCY] => 0
+    [Balance_Due_LCY] => 0
+    [Credit_Limit_LCY] => 0
+    [Blocked] => _blank_
+    [Privacy_Blocked] => 
+    [TotalSales2] => 0
+    [CustSalesLCY_CustProfit_AdjmtCostLCY] => 0
+    [AdjCustProfit] => 0
+    [AdjProfitPct] => 0
+    [Last_Date_Modified] => 2022-04-06
+    [Disable_Search_by_Name] => 
+    [ShowMap] => Show on Map
+    [Copy_Sell_to_Addr_to_Qte_From] => Company
+    [Invoice_Copies] => 0
+    [Gen_Bus_Posting_Group] => LOCAL
+    [VAT_Bus_Posting_Group] => LOCAL
+    [Customer_Posting_Group] => CREDIT
+    [Allow_Line_Disc] => 1
+    [Invoice_Disc_Code] => ACC00000082
+    [Prices_Including_VAT] => 
+    [Prepayment_Percent] => 0
+    [Application_Method] => Manual
+    [Partner_Type] => _blank_
+    [Print_Statements] => 
+    [Last_Statement_No] => 0
+    [Block_Payment_Tolerance] => 
+    [Combine_Shipments] => 
+    [Reserve] => Optional
+    [Shipping_Advice] => Partial
+    [Customized_Calendar] => No
+    [ExpectedCustMoneyOwed] => 0
+    [TotalMoneyOwed] => 0
+    [CalcCreditLimitLCYExpendedPct] => 0
+    [Balance_Due] => 0
+    [Payments_LCY] => 0
+    [CustomerMgt_AvgDaysToPay_No] => 0
+    [DaysPaidPastDueDate] => 0
+    [GetAmountOnPostedInvoices] => 0
+    [GetAmountOnCrMemo] => 0
+    [GetAmountOnOutstandingInvoices] => 0
+    [GetAmountOnOutstandingCrMemos] => 0
+    [Totals] => 0
+    [CustInvDiscAmountLCY] => 0
+    [AgedAccReceivableChart] => stdClass Object
+        (
+            [Aged_Acc_Receivable_Chart] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [Key] => 40;EgAAAAJ7/0EAQwBDADAAMAAwADAAMAAwADgAMg==9;3679896720;
+                        )
+
+                )
+
+        )
+
+    [PriceAndLineDisc] => stdClass Object
+        (
+        )
+
+)

@@ -320,7 +320,8 @@ class SiteController extends Controller
 
         $customers = ConsultationLab::find()
         ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
+        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
+        ->andWhere(['<','billdatetime', '2021-01-31 00:00:00'])
         ->andWhere(['>','testrate', 0])
         ->andWhere(['Invoiced' => 0])
         ->limit($threshold)
