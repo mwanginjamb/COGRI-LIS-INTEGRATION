@@ -130,11 +130,11 @@ class SiteController extends Controller
 
     public function actionCustomers()
     {
-       $service = Yii::$app->params['ServiceName']['CustomerPortal'];
+        $service = Yii::$app->params['ServiceName']['CustomerPortal'];
 
-       $data = Yii::$app->navhelper->getData($service, []);
+        $data = Yii::$app->navhelper->getData($service, []);
 
-       return count($data);
+        return count($data);
     }
 
     public function actionCreateCustomer()
@@ -162,46 +162,39 @@ class SiteController extends Controller
         /*print '<pre>';
         print_r($transformedCustomers);
         exit;*/
-        foreach($transformedCustomers as $tcus)
-        {
-          
-                  ++$i;
-                $navArgs[$i] = [
-                                'No'                        => $tcus->accountcode,
-                                'Name'                      => $tcus->accountname,
-                                'Search_Name'               => $tcus->accountname,
-                                'Customer_Posting_Group'    => 'Credit',
-                                'VAT_Bus_Posting_Group'     => 'LOCAL',
-                                'Gen_Bus_Posting_Group'     => 'LOCAL',
-                                'auto_number'               => $tcus->auto_number
-                            ];    
-                
+        foreach ($transformedCustomers as $tcus) {
+
+            ++$i;
+            $navArgs[$i] = [
+                'No'                        => $tcus->accountcode,
+                'Name'                      => $tcus->accountname,
+                'Search_Name'               => $tcus->accountname,
+                'Customer_Posting_Group'    => 'Credit',
+                'VAT_Bus_Posting_Group'     => 'LOCAL',
+                'Gen_Bus_Posting_Group'     => 'LOCAL',
+                'auto_number'               => $tcus->auto_number
+            ];
         }
 
 
 
-       
+
         // INSERT INTO NAV
-        foreach($navArgs as $customer)
-        {
+        foreach ($navArgs as $customer) {
 
-                 $result = Yii::$app->navhelper->postData($service, $customer);
-                 $log = print_r($result, true);
-                 $this->logger($log,'Customer');
+            $result = Yii::$app->navhelper->postData($service, $customer);
+            $log = print_r($result, true);
+            $this->logger($log, 'Customer');
 
-                if(!is_string($result))
-                {                    
-                   // $this->flag($customer['auto_number']);
-                }else
-                {
-                    print '<br/> Error....'.$result;
-                }
-            
-           
-           sleep(1); // Add some latency 
+            if (!is_string($result)) {
+                // $this->flag($customer['auto_number']);
+            } else {
+                print '<br/> Error....' . $result;
+            }
+
+
+            sleep(1); // Add some latency 
         }
-        
-
     }
 
 
@@ -213,7 +206,7 @@ class SiteController extends Controller
     public function actionCreateWalkinCustomer()
     {
 
-      /*@challenge what do we do with records without patientcode or accountcode --> walkins? use invno for No IN Navision */
+        /*@challenge what do we do with records without patientcode or accountcode --> walkins? use invno for No IN Navision */
         $service = Yii::$app->params['ServiceName']['CustomerPortal'];
 
         //Get LIS customers
@@ -232,56 +225,46 @@ class SiteController extends Controller
         /*print '<pre>';
         print_r($customers);
         exit;*/
-        foreach($transformedCustomers as $tcus)
-        {
-          
-                  ++$i;
-                $navArgs[$i] = [
-                                'No'                        => $tcus->invno,
-                                'Name'                      => $tcus->patientname,
-                                'Search_Name'               => $tcus->patientname,
-                                'Customer_Posting_Group'    => 'Credit',
-                                'VAT_Bus_Posting_Group'     => 'LOCAL',
-                                'Gen_Bus_Posting_Group'     => 'LOCAL',
-                                'auto_number'               => $tcus->auto_number
-                            ];    
-                
+        foreach ($transformedCustomers as $tcus) {
+
+            ++$i;
+            $navArgs[$i] = [
+                'No'                        => $tcus->invno,
+                'Name'                      => $tcus->patientname,
+                'Search_Name'               => $tcus->patientname,
+                'Customer_Posting_Group'    => 'Credit',
+                'VAT_Bus_Posting_Group'     => 'LOCAL',
+                'Gen_Bus_Posting_Group'     => 'LOCAL',
+                'auto_number'               => $tcus->auto_number
+            ];
         }
 
 
 
-       
+
         // INSERT INTO NAV
-        foreach($navArgs as $customer)
-        {
+        foreach ($navArgs as $customer) {
 
-                 $result = Yii::$app->navhelper->postData($service, $customer);
+            $result = Yii::$app->navhelper->postData($service, $customer);
 
 
-                 $log = print_r($result, true);
-                 $this->logger($log,'Customer');
+            $log = print_r($result, true);
+            $this->logger($log, 'Customer');
 
-                if(is_object($result))
-                {  
-                    // Flag as created 
-                   $flag =  $this->flag($customer['auto_number']);                  
-                    '<br /> Success: '.var_dump($flag);
+            if (is_object($result)) {
+                // Flag as created 
+                $flag =  $this->flag($customer['auto_number']);
+                '<br /> Success: ' . var_dump($flag);
 
-                    $log = print_r($flag, true);
-                    $this->logger($log,'Customer');
+                $log = print_r($flag, true);
+                $this->logger($log, 'Customer');
+            } else {
+                print '<br/> Error....' . $result;
+            }
 
-                }else
-                {
-                    print '<br/> Error....'.$result;
-                   
-                }
-            
-           
-           // sleep(1); // Add some latency 
+
+            // sleep(1); // Add some latency 
         }
-        
-  
-
     }
 
     // Get LIS customers
@@ -294,17 +277,16 @@ class SiteController extends Controller
         $list = json_decode($Imported, true);
 
         $customers = MasterAccountdetails::find()
-        ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['NOT IN','accountcode', $list])
-        // ->andWhere(['flag' => 0]) --Pending Update Permissions 
-        ->limit($threshold)
-       // ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['NOT', ['accountcode' => '']])
+            ->andWhere(['NOT IN', 'accountcode', $list])
+            // ->andWhere(['flag' => 0]) --Pending Update Permissions 
+            ->limit($threshold)
+            // ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
-    
+
         return json_encode($customers);
-
     }
 
 
@@ -314,25 +296,45 @@ class SiteController extends Controller
 
 
 
-    public function actionInvoiceableCustomers($threshold = 1)
+    public function actionInvoiceableCustomers($threshold = 25)
     {
 
 
         $customers = ConsultationLab::find()
-        ->where(['NOT',['accountcode' => '']])
-        ->andWhere(['>','billdatetime', '2021-01-01 00:00:00'])
-        ->andWhere(['<','billdatetime', '2021-01-31 00:00:00'])
-        ->andWhere(['>','testrate', 0])
-        ->andWhere(['Invoiced' => 0])
-        ->limit($threshold)
-        ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['NOT', ['accountcode' => '']])
+            ->andWhere(['>', 'billdatetime', '2022-01-01 00:00:00'])
+            ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
+            ->andWhere(['>', 'testrate', 0])
+            ->andWhere(['Invoiced' => 0])
+            ->limit($threshold)
+            ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
 
-    
         return json_encode($customers);
+    }
 
+
+    // Invoiced customers
+
+    public function actionInvoicedCustomers($threshold = 25)
+    {
+
+
+        $customers = ConsultationLab::find()
+            ->where(['NOT', ['accountcode' => '']])
+            ->andWhere(['>', 'billdatetime', '2022-01-01 00:00:00'])
+            ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
+            ->andWhere(['>', 'testrate', 0])
+            ->andWhere(['Invoiced' => 1])
+            ->limit($threshold)
+            ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
+
+
+        return json_encode($customers);
     }
 
 
@@ -341,24 +343,25 @@ class SiteController extends Controller
 
     /*Get unposted Refunds - Processed for Posting*/
 
-    public function actionUnpostedmemos($threshold = 30)
+    public function actionUnpostedmemos($threshold = 25)
     {
 
         //@property string $labrefund
-       //@property string $refundapprove = 'Approved'
+        //@property string $refundapprove = 'Approved'
 
         $customers = ConsultationLab::find()
-        ->where(['refundapprove' => 'Approved'])
-        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
-        ->andWhere(['refund_flag' => 0])
-        ->limit($threshold)
-        ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['refundapprove' => 'Approved'])
+            ->andWhere(['>', 'billdatetime', '2022-01-01 00:00:00'])
+            ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
+            ->andWhere(['refund_flag' => 0])
+            ->andWhere(['labrefund' => 'refund'])
+            ->limit($threshold)
+            ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
-    
+
         return json_encode($customers);
-
     }
 
 
@@ -366,11 +369,11 @@ class SiteController extends Controller
     /*Generated Credit Memo*/
 
 
-        public function actionGenerateCreditMemo()
+    public function actionGenerateCreditMemo()
     {
         $service = Yii::$app->params['ServiceName']['LISCreditmemo'];
         //Get LIS customers
-        $customers = $this->actionunpostedmemos(15);
+        $customers = $this->actionunpostedmemos();
         // convert json to php object
         $transformedCustomers = json_decode($customers);
         // print '<pre>'; print_r($transformedCustomers); exit;
@@ -379,66 +382,72 @@ class SiteController extends Controller
         $i = 0;
 
 
-        foreach($transformedCustomers as $tcus)
-        {
-          
-                  ++$i;
-                $navArgs[$i] = [
-                                'LIS_Document_No' => $tcus->invno,                 
-                                'CreditNoteNo' => $tcus->docno,
-                                'Quantity' => 0.0,
-                                'Category'     => $tcus->categoryname,
-                                'Entry_No' => $tcus->auto_number,
-                                'CustomeNo' => $tcus->accountcode,
-                                'TestCode' => $tcus->testcode,
-                                'LineAmount' => $tcus->testrate,
-                                'InvoiceDate' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'Description' =>  $tcus->testname.' - '.$tcus->docno.' - '.$tcus->patientname,
-                                'DiscountAmount' => $tcus->discountper_item, //$tcus->discountamount,
-                                'EmployeeNo' => $tcus->employeeno, //file_no
-                            ];    
-                
+        foreach ($transformedCustomers as $tcus) {
+
+            ++$i;
+            $navArgs[$i] = [
+                'LIS_Document_No' => $tcus->invno,
+                'CreditNoteNo' => $tcus->docno,
+                'Quantity' => 0.0,
+                'Category'     => $tcus->categoryname,
+                'Entry_No' => $tcus->auto_number,
+                'CustomeNo' => $tcus->accountcode,
+                'TestCode' => $tcus->testcode,
+                'LineAmount' => $tcus->testrate,
+                'InvoiceDate' => date('Y-m-d', strtotime($tcus->billdatetime)),
+                'Description' =>  $tcus->testname . ' - ' . $tcus->docno . ' - ' . $tcus->patientname,
+                'DiscountAmount' => $tcus->testrate, //$tcus->discountper_item, //$tcus->discountamount,
+                'EmployeeNo' => $tcus->employeeno, //file_no
+            ];
         }
 
 
 
-       
-            // Do credit memo
-            if(!count($navArgs)){
-                echo 'No Credit Memo to Record ';
-                $this->logger('NO records to Commit..','Memo');
-                exit();
+
+        // Do credit memo
+        if (!count($navArgs)) {
+            echo 'No Credit Memo to Record ';
+            $this->logger('NO records to Commit..', 'Memo');
+            exit();
+        }
+        foreach ($navArgs as $memo) {
+
+            $result = Yii::$app->navhelper->postData($service, $memo);
+
+            print '<pre>';
+            echo 'Credit Memo Record Committed ...............';
+            print_r($result);
+
+            echo 'Nav Payload <br>';
+            print_r($result);
+
+            $log = print_r($result, true);
+            $this->logger($log, 'Memo');
+
+            if (is_object($result) && $result->Key) {
+
+                $flag =  $this->refund($memo['Entry_No']);
+                echo 'Memo Record Flagged as refunded...............';
+
+                print_r($flag);
+
+                $log = print_r($flag, true);
+                $this->logger($log, 'Memo');
+            } else {
+                print 'Attempt to reflag this refund record: ' . $memo['Entry_No'] . '<br />';
+                $flag =  $this->refund($memo['Entry_No']);
+                echo 'Invoice............... <br />';
+
+                var_dump($flag);
+
+                $log = print_r('Attempt to reflag this refund record: ' . $memo['Entry_No'] . '<br />', true);
+                $this->logger($log, 'Memo');
             }
-            foreach($navArgs as $memo)
-            {
-  
-                $result = Yii::$app->navhelper->postData($service, $memo);
-               
-                print '<pre>';
-                echo 'Credit Memo Record Committed ...............';
-                print_r($result);
-            
-                $log = print_r($result, true);
-                $this->logger($log,'Memo');
 
-                if(is_object($result) && $result->Key)
-                {
 
-                    $flag =  $this->refund($memo['Entry_No']);  
-                    echo 'Memo Record Flagged as refunded...............';
+            sleep(2); // Add some latency  
 
-                    print_r($flag);
-                    
-                    $log = print_r($flag , true);
-                    $this->logger($log,'Memo');
-
-                }
-                
-               
-               sleep(2); // Add some latency  
-               
-            }
-            
+        }
     }
 
 
@@ -452,98 +461,101 @@ class SiteController extends Controller
 
 
         $customers = ConsultationLab::find()
-        ->where(['refundapprove' => 'Approved'])
-        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])
-        ->andWhere(['refund_flag' => 0])
-        // ->limit($threshold)
-        ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['refundapprove' => 'Approved'])
+            ->andWhere(['>', 'billdatetime', '2022-02-06 00:00:00'])
+            ->andWhere(['refund_flag' => 0])
+            // ->limit($threshold)
+            ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
-    
-        return 'Unposted refunds are :'.count($customers);
 
+        return 'Unposted refunds are :' . count($customers);
     }
 
 
     /*Metrics - Posted Refunds*/
 
 
- public function actionMetricspostedmemos($threshold = 100)
+    public function actionMetricspostedmemos($threshold = 100)
     {
 
 
         $refunds = ConsultationLab::find()
-        ->where(['refundapprove' => 'Approved'])
-        ->andWhere(['>','billdatetime', '2022-02-06 00:00:00'])       
-        ->andWhere(['refund_flag' => 1])
-       // ->limit($threshold)
-        ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['refundapprove' => 'Approved'])
+            ->andWhere(['>', 'billdatetime', '2022-02-06 00:00:00'])
+            ->andWhere(['refund_flag' => 1])
+            // ->limit($threshold)
+            ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
-    
-        return 'Posted refunds are :'.count($refunds);
 
+        return 'Posted refunds are :' . count($refunds);
     }
 
 
 
-/*Get walkin customers --> cystomer no is invno*/
+    /*Get walkin customers --> cystomer no is invno*/
 
     public function actionLisWalkinCustomers($threshold = 1)
     {
 
 
-         $Imported = $this->actionImported();
-         $list = json_decode($Imported, true);
+        $Imported = $this->actionImported();
+        $list = json_decode($Imported, true);
 
-         //return $list;
+        //return $list;
 
         $customers = ConsultationLab::find()
-        ->where(['NOT IN','invno', $list])
-        ->andWhere(['accountcode' => ''])
-        ->andWhere(['flag' =>  0])
-        ->limit($threshold)
-       // ->orderBy('auto_number ASC')
-        ->asArray()
-        ->all();
+            ->where(['NOT IN', 'invno', $list])
+            ->andWhere(['accountcode' => ''])
+            ->andWhere(['flag' =>  0])
+            ->limit($threshold)
+            // ->orderBy('auto_number ASC')
+            ->asArray()
+            ->all();
 
-    
+
         return json_encode($customers);
-
     }
 
 
 
 
 
-/*Reset All flagged entries*/
+    /*Reset All flagged entries*/
 
     public function actionDeflag()
     {
-       $connection = Yii::$app->db;
+        $connection = Yii::$app->db;
 
-       $result = $connection->createCommand()
-        ->update('consultation_lab',['Invoiced' => 0], 'Invoiced > 0')
-        ->execute();
-
-        //->andWhere(['Invoiced' => 0])
-
-
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['Invoiced' => 0], 'Invoiced > 0')
+            ->execute();
         var_dump($result);
     }
 
-
-/*De Invoice*/
-
-     public function actionDeinvoice()
+    public function actionDememo()
     {
-       $connection = Yii::$app->db;
+        $connection = Yii::$app->db;
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['refund_flag' => 0], 'refund_flag > 0')
+            ->execute();
 
-       $result = $connection->createCommand()
-        ->update('consultation_lab',['Invoiced' => 0], 'Invoiced > 0')
-        ->execute();
+        var_dump($result);
+    }
+
+
+    /*De Invoice*/
+
+    public function actionDeinvoice()
+    {
+        $connection = Yii::$app->db;
+
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['Invoiced' => 0], 'Invoiced > 0')
+            ->execute();
 
 
         var_dump($result);
@@ -551,105 +563,97 @@ class SiteController extends Controller
 
 
 
-/*Flag posted entries*/
+    /*Flag posted entries*/
     public function flag($auto_number)
     {
 
 
-       $connection = Yii::$app->db;
+        $connection = Yii::$app->db;
 
-       $result = $connection->createCommand()
-        ->update('consultation_lab',['Invoiced' => 1], 'auto_number = '.$auto_number)
-        ->execute();
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['Invoiced' => 1], 'auto_number = ' . $auto_number)
+            ->execute();
 
 
+        print 'Flagged record with auto no: ' . $auto_number . '<br />';
         var_dump($result);
-       
-
     }
 
     public function actionFlagged()
     {
 
         $model = ConsultationLab::find()
-        ->where(['Invoiced' => 1])
-        ->count();
+            ->where(['Invoiced' => 1])
+            ->count();
 
         print '<Pre>';
         print_r($model);
-       
     }
 
-/*Mark as invoiced*/
-     public function Invoice($auto_number)
+    /*Mark as invoiced*/
+    public function Invoice($auto_number)
     {
 
 
-       $connection = Yii::$app->db;
+        $connection = Yii::$app->db;
 
-       $result = $connection->createCommand()
-        ->update('consultation_lab',['Invoiced' => 1], 'auto_number = '.$auto_number)
-        ->execute();
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['Invoiced' => 1], 'auto_number = ' . $auto_number)
+            ->execute();
 
 
-       var_dump($result);
-       
-
+        return $result;
     }
 
 
     /*Mark as Refunded*/
-     public function refund($auto_number)
+    public function refund($auto_number)
     {
-       
 
-       $connection = Yii::$app->db;
 
-       $result = $connection->createCommand()
-        ->update('consultation_lab',['refund_flag' => 1], 'auto_number = '.$auto_number)
-        ->execute(); 
-        
+        $connection = Yii::$app->db;
+
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['refund_flag' => 1], 'auto_number = ' . $auto_number)
+            ->execute();
+
         return $result;
-
     }
 
 
 
-/*Get a count of all invoice entries*/
+    /*Get a count of all invoice entries*/
 
- public function actionInvoiced()
+    public function actionInvoiced()
     {
 
         $model = ConsultationLab::find()
-        ->where(['Invoiced' => 1])
-        ->count();
+            ->where(['Invoiced' => 1])
+            ->count();
 
         print '<Pre>';
         print_r($model);
-       
     }
 
 
     public function actionImported()
     {
-         $service = Yii::$app->params['ServiceName']['CustomersList'];
-        
+        $service = Yii::$app->params['ServiceName']['CustomersList'];
 
 
-         $result = Yii::$app->navhelper->getData($service, []);
 
-         $nos = [];
+        $result = Yii::$app->navhelper->getData($service, []);
 
-        if(is_array($result))
-        {
-            foreach($result as $r)
-                 {
-                    $nos[] = $r->No; 
-                 }
+        $nos = [];
+
+        if (is_array($result)) {
+            foreach ($result as $r) {
+                $nos[] = $r->No;
+            }
         }
-         
 
-         $Nos = array_values($nos);
+
+        $Nos = array_values($nos);
 
         return json_encode($Nos);
     }
@@ -657,108 +661,95 @@ class SiteController extends Controller
     public function actionGenerateInvoice()
     {
 
-    
-        
-       $service = Yii::$app->params['ServiceName']['LISInvoices'];
-      
+        $service = Yii::$app->params['ServiceName']['LISInvoices'];
+
         //Get LIS customers
 
-        $customers = $this->actionInvoiceableCustomers(10);
+        $customers = $this->actionInvoiceableCustomers();
 
         // convert json to php object
 
         $transformedCustomers = json_decode($customers);
-
-       //print '<pre>'; print_r($transformedCustomers); exit;
+        //print '<pre>'; print_r($transformedCustomers); exit;
 
         // Loop through the transformedCustomers array of objects creating a Nav Payload
         $navArgs = [];
         $i = 0;
 
-       
-       
-        foreach($transformedCustomers as $tcus)
-        {
-          
-                  ++$i;
-                $navArgs[$i] = [
-                                'InvoiceNo' => $tcus->invno,
-                                
-                                'LIS_Document_No' => $tcus->docno,
-                                'Quantity' => 0.0,
-                                'Category'     => $tcus->categoryname,
-                                'Entry_No' => $tcus->auto_number,
-                                'CustomeNo' => $tcus->accountcode,
-                                'TestCode' => $tcus->testcode,
-                                'LineAmount' => $tcus->testrate,
-                                'InvoiceDate' => date('Y-m-d',strtotime($tcus->billdatetime)),
-                                'Description' =>  $tcus->testname.' - '.$tcus->docno.' - '.$tcus->patientname,
-                                'DiscountAmount' => $tcus->discountper_item, //$tcus->discountamount,
-                                'EmployeeNo' => $tcus->employeeno, //file_no
-                            ];    
-                
+        // from Nov 2021 use "discountper_item"
+        foreach ($transformedCustomers as $tcus) {
+
+            ++$i;
+            $navArgs[$i] = [
+                'InvoiceNo' => $tcus->invno,
+
+                'LIS_Document_No' => $tcus->docno,
+                'Quantity' => 0.0,
+                'Category'     => $tcus->categoryname,
+                'Entry_No' => $tcus->auto_number,
+                'CustomeNo' => $tcus->accountcode,
+                'TestCode' => $tcus->testcode,
+                'LineAmount' => $tcus->testrate,
+                'InvoiceDate' => date('Y-m-d', strtotime($tcus->billdatetime)),
+                'Description' =>  $tcus->testname . ' - ' . $tcus->docno . ' - ' . $tcus->patientname,
+                'DiscountAmount' => $tcus->discountper_item,
+                'EmployeeNo' => $tcus->employeeno, //file_no
+            ];
         }
 
-       
+        // INVOICE IN NAV
+        foreach ($navArgs as $customer) {
 
+            $result = Yii::$app->navhelper->postData($service, $customer);
 
+            print '<pre>';
+            echo 'Record Invoiced............... <br />';
+            print_r($result);
+            print 'Nav Payload <br />';
+            print_r($customer);
+            $InvoiceLog =  $result;
+            $log = print_r($InvoiceLog, true);
+            $this->logger($log, 'Invoice');
 
-       
-            // INVOICE IN NAV
-            foreach($navArgs as $customer)
-            {
+            if (is_object($result) && $result->Key) {
 
-                
-                
-                $result = Yii::$app->navhelper->postData($service, $customer);
-               
-                print '<pre>';
-                echo 'Record Invoiced...............';
-                print_r($result);
-                $InvoiceLog =  $result;
-                $log = print_r($InvoiceLog, true);
-                $this->logger($log,'Invoice');
+                $flag =  $this->Invoice($customer['Entry_No']);
+                echo 'Invoice...............';
 
-                if(is_object($result) && $result->Key)
-                {
+                print_r($flag);
 
-                    $flag =  $this->Invoice($customer['Entry_No']);  
-                    echo 'Invoice...............';
+                $log = print_r($flag, true);
+                $this->logger($log, 'Invoice');
+            } else {
+                print 'Attempt to reflag the record: ' . $customer['Entry_No'] . '<br />';
+                $flag =  $this->Invoice($customer['Entry_No']);
+                echo 'Invoice............... <br />';
 
-                    print_r($flag);
-                    
-                    $log = print_r($flag , true);
-                    $this->logger($log,'Invoice');
+                var_dump($flag);
 
-                }
-                
-               
-               sleep(2); // Add some latency 
-              // exit;
+                $log = print_r('Attempted to reflag the record: ' . $customer['Entry_No'] . '<br />', true);
+                $this->logger($log, 'Invoice');
             }
-            
+
+
+            sleep(2); // Add some latency 
+            // exit;
+        }
     }
 
     private function logger($message, $type)
-	{
-        if($type == 'Invoice')
-        {
+    {
+        if ($type == 'Invoice') {
             $filename = 'log/invoice.txt';
-        }
-        elseif($type == 'Memo') 
-        {
+        } elseif ($type == 'Memo') {
             $filename = 'log/memo.txt';
-        }
-        elseif($type == 'Customer') 
-        {
+        } elseif ($type == 'Customer') {
             $filename = 'log/Customer.txt';
         }
-		
-		$req_dump = print_r($message, TRUE);
-		$fp = fopen($filename, 'a');
-		fwrite($fp, $req_dump);
-		fclose($fp);
-	}
 
-
+        $req_dump = print_r($message, TRUE);
+        $fp = fopen($filename, 'a');
+        fwrite($fp, $req_dump);
+        fclose($fp);
+    }
 }
