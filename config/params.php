@@ -7,14 +7,12 @@ return [
     'NavisionUsername' => 'iansoft',
     'NavisionPassword' => 'Password12345',
 
-    'server'=>'167.86.83.32', //'167.86.95.19',//'app-svr-dev.rbss.com',//Navision Server
-    'WebServicePort'=>'7047',//Nav server Port
-    'ServerInstance'=>'BC140',//Nav Server Instance
-    'CompanyName'=> 'COGRI', //'COGRI',//Nav Company,
+    'server' => '38.242.151.87',
+    'WebServicePort' => '7047', //Nav server Port
+    'ServerInstance' => 'BC140', //Nav Server Instance
+    'CompanyName' => 'COGRI', //'COGRI',//Nav Company,
 
     'IvanPwd' => 'COGRIndl@2016.',
-
-
 
     'codeUnits' => [
         //'CreateInvoicePortal',
@@ -23,7 +21,7 @@ return [
 
 
     'ServiceName' => [
-    	'CustomerPortal' => 'CustomerPortal',
+        'CustomerPortal' => 'CustomerPortal',
         'CustomersList' =>  'CustomersList',
         'Create_Invoice_Portal' => 'Create_Invoice_Portal',
         'SaleInvPortal' => 'SaleInvPortal',

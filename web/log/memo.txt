@@ -1,2 +1,0 @@
-The record already exists.Attempt to reflag this refund record: 352456<br />
-The record already exists.Attempt to reflag this refund record: 352547<br />The record already exists.Attempt to reflag this refund record: 352665<br />Could not connect to hostAttempt to reflag this refund record: 352763<br />

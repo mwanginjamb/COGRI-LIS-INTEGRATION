@@ -303,7 +303,7 @@ class SiteController extends Controller
         $customers = ConsultationLab::find()
             ->where(['NOT', ['accountcode' => '']])
             ->andWhere(['>', 'billdatetime', '2022-01-01 00:00:00'])
-            ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
+            //->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
             ->andWhere(['>', 'testrate', 0])
             ->andWhere(['Invoiced' => 0])
             ->limit($threshold)
@@ -352,7 +352,7 @@ class SiteController extends Controller
         $customers = ConsultationLab::find()
             ->where(['refundapprove' => 'Approved'])
             ->andWhere(['>', 'billdatetime', '2022-01-01 00:00:00'])
-            ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
+            // ->andWhere(['<', 'billdatetime', '2022-06-31 23:59:00'])
             ->andWhere(['refund_flag' => 0])
             ->andWhere(['labrefund' => 'refund'])
             ->limit($threshold)
@@ -605,6 +605,20 @@ class SiteController extends Controller
         return $result;
     }
 
+    public function UnflagInvoice($auto_number)
+    {
+
+
+        $connection = Yii::$app->db;
+
+        $result = $connection->createCommand()
+            ->update('consultation_lab', ['Invoiced' => 0], 'auto_number = ' . $auto_number)
+            ->execute();
+
+
+        return $result;
+    }
+
 
     /*Mark as Refunded*/
     public function refund($auto_number)
@@ -701,38 +715,36 @@ class SiteController extends Controller
         foreach ($navArgs as $customer) {
 
             $result = Yii::$app->navhelper->postData($service, $customer);
-
-            print '<pre>';
-            echo 'Record Invoiced............... <br />';
-            print_r($result);
-            print 'Nav Payload <br />';
-            print_r($customer);
             $InvoiceLog =  $result;
             $log = print_r($InvoiceLog, true);
             $this->logger($log, 'Invoice');
 
             if (is_object($result) && $result->Key) {
-
                 $flag =  $this->Invoice($customer['Entry_No']);
-                echo 'Invoice...............';
-
-                print_r($flag);
-
-                $log = print_r($flag, true);
+                $log = print_r("Mysql Result -Attempting to mark a transaction as invoiced - : " . $flag . ' Transaction: ' . $customer['Entry_No'] . "\n", true);
                 $this->logger($log, 'Invoice');
-            } else {
-                print 'Attempt to reflag the record: ' . $customer['Entry_No'] . '<br />';
+                if ($flag !== 1) { // MYSQL ERROR CHECKING
+                    $flag =  $this->UnflagInvoice($customer['Entry_No']);
+                    $this->logger('Error Invoice ...' . "\n", 'Invoice');
+                    $this->logger($result, 'Invoice');
+                    $log = print_r('Attempted to unflag the record: ' . $customer['Entry_No'] . "\n", true);
+                    $this->logger($log, 'Invoice');
+                }
+            } else { //CASE FOR ALREADY EXISTING RECORS IN ERP
                 $flag =  $this->Invoice($customer['Entry_No']);
-                echo 'Invoice............... <br />';
-
-                var_dump($flag);
-
-                $log = print_r('Attempted to reflag the record: ' . $customer['Entry_No'] . '<br />', true);
+                if ($flag !== 1) { // MYSQL ERROR CHECKING
+                    $flag =  $this->UnflagInvoice($customer['Entry_No']);
+                    $this->logger('Error Invoice ...' . "\n", 'Invoice');
+                    $this->logger($result . "\n", 'Invoice');
+                    $log = print_r('Attempted to unflag the record: ' . $customer['Entry_No'] . "\n", true);
+                    $this->logger($log, 'Invoice');
+                }
+                $log = print_r("Flagged Existing transaction as invoiced - : " . $flag . ' Transaction: ' . $customer['Entry_No'] . "\n", true);
                 $this->logger($log, 'Invoice');
             }
 
 
-            sleep(2); // Add some latency 
+            sleep(5); // Add some latency 
             // exit;
         }
     }
